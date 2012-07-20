@@ -2,6 +2,7 @@
 bin/*
 lib/*
 .DS_Store
+.settings/*
 # Package Files #
 *.jar
 *.war
