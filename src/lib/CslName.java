@@ -93,25 +93,31 @@ public class CslName extends CslFormat{
 		   count++;
 		   JSONObject name = (JSONObject) names.get(i);
 		   if (name.containsKey("given") && initializeWith !=null) {
-			   given = name.get("given").toString().replaceAll("/([$this\\->upper])[$this\\->lower]+/$this\\->patternModifiers", "\\1"); 
-			   given = name.get("given").toString().replaceAll("/(?<=[-$this\\->upper]) +(?=[-$this\\->upper])/$this\\->patternModifiers",""); 
+			   System.out.println("this.sdfdf^^^^^^^^^^^^"+this.attributes);
+			   given = name.get("given").toString().replaceAll("/(["+this.attributes.get("upper")+"])["+this.attributes.get("lower")+"]+/"+this.attributes.get("patternModifiers"), "\\1"); 
+			   given = name.get("given").toString().replaceAll("/(?<=[-"+this.attributes.get("upper")+"]) +(?=[-"+this.attributes.get("upper")+"])/"+this.attributes.get("patternModifiers"),"");
+			/*   if(initials != null && (!initials.equalsIgnoreCase(""))) {
+				   initials = given+initials;
+		          }*/
+			   initials = given;
+			   System.out.println("initials----"+initials);
 		   }
 		   if(name.containsKey("initials")){
 
 		        // within initials, remove any dots:
-		         initials = name.get("initials").toString().replaceAll("/([$this->upper])\\.+/$this->patternModifiers", "\\1");
+		         initials = name.get("initials").toString().replaceAll("/(["+this.attributes.get("upper")+"])\\.+/"+this.attributes.get("patternModifiers"), "\\1");
 		        // within initials, remove any spaces *between* initials:
-		        initials = name.get("initials").toString().replaceAll("/(?<=[-$this->upper]) +(?=[-$this->upper])/$this->patternModifiers", "");
+		        initials = name.get("initials").toString().replaceAll("/(?<=[-"+this.attributes.get("upper")+"]) +(?=[-"+this.attributes.get("upper")+"])/"+this.attributes.get("patternModifiers"), "");
 		        if (this.citeProc.style.attributes.get("initialize-with-hyphen").equals(new Boolean(false))) {
 		        	initials = name.get("initials").toString().replaceAll("/-/", "");
 		        }
 		        String pattern = "/ $/";
 		        // within initials, add a space after a hyphen, but only if ...
 		        if (initializeWith.matches(pattern)) {// ... the delimiter that separates initials ends with a space
-		        	initials = name.get("initials").toString().replaceAll("/-(?=[$this->upper])/$this->patternModifiers", "- ");
+		        	initials = name.get("initials").toString().replaceAll("/-(?=["+this.attributes.get("upper")+"])/"+this.attributes.get("patternModifiers"), "- ");
 		        }
 		        // then, separate initials with the specified delimiter:
-		        initials = name.get("initials").toString().replaceAll("/([$this->upper])(?=[^$this->lower]+|$)/$this->patternModifiers", "\\1$initialize_with");
+		        initials = name.get("initials").toString().replaceAll("/(["+this.attributes.get("upper")+"])(?=[^"+this.attributes.get("lower")+"]+|$)/"+this.attributes.get("patternModifiers"), "\\1"+initializeWith+"\"");
  
 
 		        if (initializeWith != null) {
@@ -429,5 +435,86 @@ public class CslName extends CslFormat{
 		  this.citeProc.noOp.put(part, new Boolean(false)); 
 	  System.out.println("this format--->"+this.format);
   }
-  
+  public HashMap getRegexPatterns() {
+	    // Checks if PCRE is compiled with UTF-8 and Unicode support
+	  HashMap retMap = new HashMap();
+	  String pattern = "/\\pL/u";
+      // within initials, add a space after a hyphen, but only if ...
+      if (!"a".matches(pattern)) {
+	   
+	      // probably a broken PCRE library
+	      return getLatin1Regex();
+	    }
+	/*    else {
+	      // Unicode safe filter for the value
+	      return $this->get_utf8_regex();
+	    }*/
+      return retMap;
+	  }
+  public HashMap getLatin1Regex() {
+	  HashMap retMap = new HashMap();
+	  retMap.put("alnum", "[:alnum:]ÄÅÁÀÂÃÇÉÈÊËÑÖØÓÒÔÕÜÚÙÛÍÌÎÏÆäåáàâãçéèêëñöøóòôõüúùûíìîïæÿß");
+	  // Matches ISO-8859-1 letters:
+	  retMap.put("alpha", "[:alpha:]ÄÅÁÀÂÃÇÉÈÊËÑÖØÓÒÔÕÜÚÙÛÍÌÎÏÆäåáàâãçéèêëñöøóòôõüúùûíìîïæÿß");
+	  // Matches ISO-8859-1 control characters:
+	  retMap.put("cntrl", "[:cntrl:]"); 
+	// Matches ISO-8859-1 dashes & hyphens:
+	  retMap.put("dash", "-–");
+	  // Matches ISO-8859-1 digits:
+	  retMap.put("digit", "[\\d]");
+	  // Matches ISO-8859-1 printing characters (excluding space):
+	  retMap.put("graph", "[:graph:]ÄÅÁÀÂÃÇÉÈÊËÑÖØÓÒÔÕÜÚÙÛÍÌÎÏÆäåáàâãçéèêëñöøóòôõüúùûíìîïæÿß");
+	  // Matches ISO-8859-1 lower case letters:
+	  retMap.put("lower", "[:lower:]äåáàâãçéèêëñöøóòôõüúùûíìîïæÿß");
+	   // Matches ISO-8859-1 printing characters (including space):
+	  retMap.put("print", "[:print:]ÄÅÁÀÂÃÇÉÈÊËÑÖØÓÒÔÕÜÚÙÛÍÌÎÏÆäåáàâãçéèêëñöøóòôõüúùûíìîïæÿß");
+	   // Matches ISO-8859-1 punctuation:
+	  retMap.put("punct", "[:punct:]"); 
+	    // Matches ISO-8859-1 whitespace (separating characters with no visual representation):
+	  retMap.put("space",  "[\\s]"); 
+	    // Matches ISO-8859-1 upper case letters:
+	  retMap.put("upper",  "[:upper:]ÄÅÁÀÂÃÇÉÈÊËÑÖØÓÒÔÕÜÚÙÛÍÌÎÏÆ"); 
+	    // Matches ISO-8859-1 "word" characters:
+	  retMap.put("word", "_[:alnum:]ÄÅÁÀÂÃÇÉÈÊËÑÖØÓÒÔÕÜÚÙÛÍÌÎÏÆäåáàâãçéèêëñöøóòôõüúùûíìîïæÿß");  
+	    // Defines the PCRE pattern modifier(s) to be used in conjunction with the above variables:
+	    // More info: <http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php> 
+	    retMap.put("patternModifiers", "");  
+	    return retMap;
+
+	  }
+  public HashMap get_utf8_regex() {
+	  HashMap retMap = new HashMap();
+	    // Matches Unicode letters & digits:
+	  retMap.put("alnum", "\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}\\p{Nd}");// Unicode-aware equivalent of "[:alnum:]"
+	 
+	    // Matches Unicode letters: 
+	    retMap.put("alpha", "\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}");// Unicode-aware equivalent of "[:alpha:]"
+	    // Matches Unicode control codes & characters not in other categories: 
+	    retMap.put("cntrl", "\\p{C}");// Unicode-aware equivalent of "[:cntrl:]"
+	    // Matches Unicode dashes & hyphens: 
+	    retMap.put("dash", "\\p{Pd}");
+	    // Matches Unicode digits: 
+	    retMap.put("digit", "\\p{Nd}");// Unicode-aware equivalent of "[:digit:]"
+	    // Matches Unicode printing characters (excluding space):
+	    retMap.put("graph", "^\\p{C}\\t\\n\\f\\r\\p{Z}");// Unicode-aware equivalent of "[:graph:]"
+	    // Matches Unicode lower case letters: 
+	    retMap.put("lower", "\\p{Ll}\\p{M}");// Unicode-aware equivalent of "[:lower:]"
+	    // Matches Unicode printing characters (including space):
+	    $print = "\P{C}"; 
+	    retMap.put("print", "\\P{C}");// same as "^\p{C}", Unicode-aware equivalent of "[:print:]"
+	    // Matches Unicode punctuation (printing characters excluding letters & digits):
+	    $punct = "\p{P}"; // Unicode-aware equivalent of "[:punct:]"
+	    // Matches Unicode whitespace (separating characters with no visual representation):
+	    $space = "\t\n\f\r\p{Z}"; // Unicode-aware equivalent of "[:space:]"
+	    // Matches Unicode upper case letters:
+	    $upper = "\p{Lu}\p{Lt}"; // Unicode-aware equivalent of "[:upper:]"
+	    // Matches Unicode "word" characters:
+	    $word = "_\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}"; // Unicode-aware equivalent of "[:word:]" (or "[:alnum:]" plus "_")
+	    // Defines the PCRE pattern modifier(s) to be used in conjunction with the above variables:
+	    // More info: <http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php>
+	    $patternModifiers = "u"; // the "u" (PCRE_UTF8) pattern modifier causes PHP/PCRE to treat pattern strings as UTF-8
+	    return array($alnum, $alpha, $cntrl, $dash, $digit, $graph, $lower,
+	                 $print, $punct, $space, $upper, $word, $patternModifiers);
+	  }
+
 }
