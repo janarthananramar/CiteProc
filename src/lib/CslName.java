@@ -29,6 +29,19 @@ public class CslName extends CslFormat{
   String family = "";
   Node pdomNode;
   CiteProc pciteProc;
+  String alnum = "";
+  String alpha = "";
+  String cntrl = "";
+  String dash = "";
+  String digit = "";
+  String graph = "";
+  String lower = "";
+  String print = "";
+  String punct = "";
+  String space = "";
+  String upper = "";
+  String word = "";
+  String patternModifiers = "";
   ArrayList authors = new ArrayList();
  
   /*public CslName(){
@@ -84,6 +97,7 @@ public class CslName extends CslFormat{
 	  int authCount = 0;
 	  boolean etAlTriggered = false;
 	  String initializeWith = (String) this.attributes.get("initialize-with");
+	  try{
 	   if(this.attrInit != null || !(this.attrInit.equalsIgnoreCase(mode))) {
 		   System.out.println("asdfds");
 		   this.initAttrs(mode);
@@ -93,32 +107,38 @@ public class CslName extends CslFormat{
 		   count++;
 		   JSONObject name = (JSONObject) names.get(i);
 		   if (name.containsKey("given") && initializeWith !=null) {
-			   System.out.println("this.sdfdf^^^^^^^^^^^^"+this.attributes);
-			   given = name.get("given").toString().replaceAll("/(["+this.attributes.get("upper")+"])["+this.attributes.get("lower")+"]+/"+this.attributes.get("patternModifiers"), "\\1"); 
-			   given = name.get("given").toString().replaceAll("/(?<=[-"+this.attributes.get("upper")+"]) +(?=[-"+this.attributes.get("upper")+"])/"+this.attributes.get("patternModifiers"),"");
+			   System.out.println("this.upper^^^^^^^^^^^^"+this.upper);
+			   System.out.println("this.lower^^^^^^^^^^^^"+this.lower);
+			   System.out.println("this.patternModifiers^^^^^^^^^^^^"+this.patternModifiers); 
+			   System.out.println("(["+this.upper+"])["+this.lower+"]+"+this.patternModifiers);
+			 //  ([\\p{Lu}\\p{Lt}])[\\p{Ll}\\p{M}]+
+			   given = name.get("given").toString().replaceAll("(["+this.upper+"])["+this.lower+"]+"+this.patternModifiers, "$1");  
+			   given = given.toString().replaceAll("(?<=[-"+this.upper+"]) +(?=[-"+this.upper+"])"+this.patternModifiers, "");
 			/*   if(initials != null && (!initials.equalsIgnoreCase(""))) {
 				   initials = given+initials;
 		          }*/
 			   initials = given;
 			   System.out.println("initials----"+initials);
 		   }
-		   if(name.containsKey("initials")){
+		   if(initials != null && !initials.equalsIgnoreCase("")){
 
 		        // within initials, remove any dots:
-		         initials = name.get("initials").toString().replaceAll("/(["+this.attributes.get("upper")+"])\\.+/"+this.attributes.get("patternModifiers"), "\\1");
+		         initials = initials.toString().replaceAll("(["+this.upper+"])\\.+"+this.patternModifiers, "$1");
 		        // within initials, remove any spaces *between* initials:
-		        initials = name.get("initials").toString().replaceAll("/(?<=[-"+this.attributes.get("upper")+"]) +(?=[-"+this.attributes.get("upper")+"])/"+this.attributes.get("patternModifiers"), "");
-		        if (this.citeProc.style.attributes.get("initialize-with-hyphen").equals(new Boolean(false))) {
+		        initials = initials.toString().replaceAll("(?<=[-"+this.upper+"]) +(?=[-"+this.upper+"])"+this.patternModifiers, "");
+		        System.out.println("this.citeProc.style--"+this.citeProc.style);
+		        System.out.println("this.citeProc.style--"+this.citeProc.style.attributes);
+		        if (this.citeProc.style.attributes.get("initialize-with-hyphen") != null && this.citeProc.style.attributes.get("initialize-with-hyphen").equals(new Boolean(false))) {
 		        	initials = name.get("initials").toString().replaceAll("/-/", "");
 		        }
 		        String pattern = "/ $/";
 		        // within initials, add a space after a hyphen, but only if ...
 		        if (initializeWith.matches(pattern)) {// ... the delimiter that separates initials ends with a space
-		        	initials = name.get("initials").toString().replaceAll("/-(?=["+this.attributes.get("upper")+"])/"+this.attributes.get("patternModifiers"), "- ");
+		        	initials = initials.toString().replaceAll("-(?=["+this.upper+"])"+this.patternModifiers, "- ");
 		        }
 		        // then, separate initials with the specified delimiter:
-		        initials = name.get("initials").toString().replaceAll("/(["+this.attributes.get("upper")+"])(?=[^"+this.attributes.get("lower")+"]+|$)/"+this.attributes.get("patternModifiers"), "\\1"+initializeWith+"\"");
- 
+		        initials = initials.toString().replaceAll("(["+this.upper+"])(?=[^"+this.lower+"]+|$)"+this.patternModifiers, "$1"+initializeWith);
+                System.out.println("initials---^6"+initials);
 
 		        if (initializeWith != null) {
 		          given = initials;
@@ -130,11 +150,12 @@ public class CslName extends CslFormat{
 		          given = initials;
 		        }
 		   }
+		   System.out.println("given**"+given);
 		   String ndp = name.containsKey("non-dropping-particle")? name.get("non-dropping-particle")+" ":"";
 		   String suffix = name.containsKey("suffix") ?" "+name.get("suffix"):"";
 		 
            if(given !=null){
-		         given = this.format((String)name.get("given"), "given");
+		         given = this.format(given, "given");
 				   System.out.println("given after--->"+given);
 		      }
            if(name.containsKey("family")) {
@@ -229,6 +250,10 @@ public class CslName extends CslFormat{
 	     
 	    }
 	  System.out.println("Text--->"+text);
+	  }
+	  catch(Exception e){
+		  e.printStackTrace();
+	  }
 	  return text;
   }
   public String format(String text, String part) {
@@ -306,14 +331,26 @@ public class CslName extends CslFormat{
 	  if (this.delimiter == null && this.delimiter.equalsIgnoreCase("")) {
 		  this.delimiter = (String) this.attributes.get("name-delimiter"); 
 	     }
-
-	    /* if (!isset($this->alnum)) {
-	       list($this->alnum, $this->alpha, $this->cntrl, $this->dash,
-	       $this->digit, $this->graph, $this->lower, $this->print,
-	       $this->punct, $this->space, $this->upper, $this->word,
-	       $this->patternModifiers) = $this->get_regex_patterns();
+	  	HashMap regMap = new HashMap();
+	  	
+	     if (this.alnum == null || alnum.equalsIgnoreCase("")) {
+	    	 regMap = getRegexPatterns();
+	    	 this.alnum = regMap.get("alnum").toString();
+	    	 this.alpha = regMap.get("alpha").toString();
+	    	 this.cntrl = regMap.get("cntrl").toString();
+	    	 this.dash = regMap.get("dash").toString();
+	    	 this.digit = regMap.get("digit").toString();
+	    	 this.graph = regMap.get("graph").toString();
+	    	 this.lower = regMap.get("lower").toString();
+	    	 this.print = regMap.get("print").toString();
+	    	 this.punct = regMap.get("punct").toString();
+	    	 this.space = regMap.get("space").toString();
+	    	 this.upper = regMap.get("upper").toString();
+	    	 this.word = regMap.get("word").toString();
+	    	 this.patternModifiers = regMap.get("patternModifiers").toString(); 
 	       
-	     }*/
+	       
+	     }
 	  this.dpl = (String) this.attributes.get("delimiter-precedes-last"); 
 	  this.sort_separator = (String) ((this.attributes.get("sort-separator")!=null) ? this.attributes.get("sort-separator"):",");
 	  this.form = (this.form !=null) ? this.form :"long";
@@ -437,19 +474,21 @@ public class CslName extends CslFormat{
   }
   public HashMap getRegexPatterns() {
 	    // Checks if PCRE is compiled with UTF-8 and Unicode support
-	  HashMap retMap = new HashMap();
-	  String pattern = "/\\pL/u";
+	 
+	  String pattern = "[\\pL]";
+	  System.out.println("matches---"+"a".matches(pattern));
       // within initials, add a space after a hyphen, but only if ...
-      if (!"a".matches(pattern)) {
-	   
+      if (!("a".matches(pattern))) {
+	   System.out.println("%%%%%%%%%%%%%%%%%%");
 	      // probably a broken PCRE library
 	      return getLatin1Regex();
 	    }
-	/*    else {
+	    else {
+	    	System.out.println("@@@@@@@@@@@@@@@@@@");
 	      // Unicode safe filter for the value
-	      return $this->get_utf8_regex();
-	    }*/
-      return retMap;
+	      return getUtf8Regex();
+	    }
+     
 	  }
   public HashMap getLatin1Regex() {
 	  HashMap retMap = new HashMap();
@@ -482,39 +521,37 @@ public class CslName extends CslFormat{
 	    return retMap;
 
 	  }
-  public HashMap get_utf8_regex() {
+  public HashMap getUtf8Regex() {
 	  HashMap retMap = new HashMap();
 	    // Matches Unicode letters & digits:
-	  retMap.put("alnum", "\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}\\p{Nd}");// Unicode-aware equivalent of "[:alnum:]"
+	  retMap.put("alnum", "\\pL\\pN");// Unicode-aware equivalent of "[:alnum:]"
 	 
 	    // Matches Unicode letters: 
-	    retMap.put("alpha", "\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}");// Unicode-aware equivalent of "[:alpha:]"
+	    retMap.put("alpha", "\\pL$");// Unicode-aware equivalent of "[:alpha:]"
 	    // Matches Unicode control codes & characters not in other categories: 
-	    retMap.put("cntrl", "\\p{C}");// Unicode-aware equivalent of "[:cntrl:]"
+	    retMap.put("cntrl", "\\pC");// Unicode-aware equivalent of "[:cntrl:]"
 	    // Matches Unicode dashes & hyphens: 
-	    retMap.put("dash", "\\p{Pd}");
+	    retMap.put("dash", "\\Pd");
 	    // Matches Unicode digits: 
-	    retMap.put("digit", "\\p{Nd}");// Unicode-aware equivalent of "[:digit:]"
+	    retMap.put("digit", "\\Nd");// Unicode-aware equivalent of "[:digit:]"
 	    // Matches Unicode printing characters (excluding space):
-	    retMap.put("graph", "^\\p{C}\\t\\n\\f\\r\\p{Z}");// Unicode-aware equivalent of "[:graph:]"
+	    retMap.put("graph", "^\\p{Zs}\\p{gc=Cc}\\p{gc=Cs}\\p{gc=Cn}");// Unicode-aware equivalent of "[:graph:]"
 	    // Matches Unicode lower case letters: 
 	    retMap.put("lower", "\\p{Ll}\\p{M}");// Unicode-aware equivalent of "[:lower:]"
-	    // Matches Unicode printing characters (including space):
-	    $print = "\P{C}"; 
+	    // Matches Unicode printing characters (including space): 
 	    retMap.put("print", "\\P{C}");// same as "^\p{C}", Unicode-aware equivalent of "[:print:]"
 	    // Matches Unicode punctuation (printing characters excluding letters & digits):
-	    $punct = "\p{P}"; // Unicode-aware equivalent of "[:punct:]"
+	    retMap.put("punct", "\\p{P}");// Unicode-aware equivalent of "[:punct:]"
 	    // Matches Unicode whitespace (separating characters with no visual representation):
-	    $space = "\t\n\f\r\p{Z}"; // Unicode-aware equivalent of "[:space:]"
+	    retMap.put("space", "\\t\\n\\f\\r\\p{Z}");// Unicode-aware equivalent of "[:space:]"
 	    // Matches Unicode upper case letters:
-	    $upper = "\p{Lu}\p{Lt}"; // Unicode-aware equivalent of "[:upper:]"
-	    // Matches Unicode "word" characters:
-	    $word = "_\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}"; // Unicode-aware equivalent of "[:word:]" (or "[:alnum:]" plus "_")
+	    retMap.put("upper", "\\p{Lu}\\p{Lt}");// Unicode-aware equivalent of "[:upper:]"
+	    // Matches Unicode "word" characters: 
+	    retMap.put("word", "_\\p{Ll}\\p{Lu}\\p{Lt}\\p{Lo}\\p{Nd}");// Unicode-aware equivalent of "[:word:]" (or "[:alnum:]" plus "_")
 	    // Defines the PCRE pattern modifier(s) to be used in conjunction with the above variables:
-	    // More info: <http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php>
-	    $patternModifiers = "u"; // the "u" (PCRE_UTF8) pattern modifier causes PHP/PCRE to treat pattern strings as UTF-8
-	    return array($alnum, $alpha, $cntrl, $dash, $digit, $graph, $lower,
-	                 $print, $punct, $space, $upper, $word, $patternModifiers);
+	    // More info: <http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php> 
+	    retMap.put("patternModifiers", "");// the "u" (PCRE_UTF8) pattern modifier causes PHP/PCRE to treat pattern strings as UTF-8
+	    return retMap;
 	  }
 
 }
