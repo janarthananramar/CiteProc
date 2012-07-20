@@ -112,13 +112,10 @@ public class CslName extends CslFormat{
 			   System.out.println("this.lower^^^^^^^^^^^^"+this.lower);
 			   System.out.println("this.patternModifiers^^^^^^^^^^^^"+this.patternModifiers); 
 			   System.out.println("(["+this.upper+"])["+this.lower+"]+"+this.patternModifiers);
-			 //  ([\\p{Lu}\\p{Lt}])[\\p{Ll}\\p{M}]+
 			 
 			   givenValue = name.get("given").toString().replaceAll("(["+this.upper+"])["+this.lower+"]+"+this.patternModifiers, "$1");  
 			   givenValue = givenValue.toString().replaceAll("(?<=[-"+this.upper+"]) +(?=[-"+this.upper+"])"+this.patternModifiers, "");
-			/*   if(initials != null && (!initials.equalsIgnoreCase(""))) {
-				   initials = given+initials;
-		          }*/
+			 
 			   name.put("given", givenValue);
 			   initials = givenValue;
 			   System.out.println("initials----"+initials);
@@ -367,7 +364,7 @@ public class CslName extends CslFormat{
 	     }
 	  this.dpl = (String) this.attributes.get("delimiter-precedes-last"); 
 	  this.sort_separator = (String) ((this.attributes.get("sort-separator")!=null) ? this.attributes.get("sort-separator"):",");
-	  this.form = (this.form !=null) ? this.form :"long";
+	  this.form = (this.attributes.get("form") !=null) ? this.attributes.get("form").toString() :"long";
 	  this.attrInit = mode; 
   }
   public void setNamePairs(Node domNode){
