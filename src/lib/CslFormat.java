@@ -10,11 +10,11 @@ import core.CiteProc;
 
 public class CslFormat extends CslRenderingElement {
   protected boolean noOp;
-  protected String format;
+  protected String format = "";
   HashMap quotes = new HashMap();
   
-  String spanCass;
-  String divClass;
+  String spanCass = "";
+  String divClass ="";
   String prefix = "";
   String suffix = "";
   String divStyle;
@@ -75,7 +75,7 @@ public class CslFormat extends CslRenderingElement {
   public String format(String text) {
     String style = "";
     String Class = "";
-    if (text.equalsIgnoreCase("") || this.noOp)
+    if (text.isEmpty() || this.noOp)
       return text;
     if (this._get("text-case") != null && this._get("text-case").length() > 0) {
       if (this._get("text-case").equalsIgnoreCase("uppercase"))
@@ -95,9 +95,10 @@ public class CslFormat extends CslRenderingElement {
     }
     System.out.println("**"+this.quotes.get("open-quote"));
     if(this.quotes.get("open-quote") != null)
-    prefix = this.prefix + this.quotes.get("open-quote");
-    suffix = this.suffix;
-    if (this.quotes.get("close-quote") !=null && suffix !=null
+    prefix = this.attributes.get("prefix").toString() + this.quotes.get("open-quote");
+    if(this.attributes.get("suffix") != null)
+    suffix = this.attributes.get("suffix").toString();
+    if (this.quotes.get("close-quote") !=null && !suffix.isEmpty() 
         && this.quotes.get("punctuation-in-quote") != null) {
       if (suffix.contains(".") || suffix.contains(",")) {
     	  if(this.quotes.get("close-quote") != null)
@@ -106,26 +107,27 @@ public class CslFormat extends CslRenderingElement {
     } else if (this.quotes.get("close-quote") != null) {
       suffix = this.quotes.get("close-quote") + suffix;
     }
-    if (suffix !=null && !suffix.equalsIgnoreCase("")) {
+    if (!suffix.isEmpty()) {
       String noTags = text.replaceAll("\\<.*?\\>", "");
 
       if (noTags.length() > 0 && noTags.charAt(noTags.length() - 1) == suffix.charAt(0)) {
         suffix = suffix.substring(1);
       }
     }
-    if (this.format != null || this.spanCass !=null) {
-      style = (this.format !=null) ? "style=\"" + this.format + "\"" : "";
-      Class = (this.spanCass != null) ? "class=\"" + this.spanCass + "\"" : "";
+    if (!this.format.isEmpty() || !this.spanCass.isEmpty()) {
+      style = (!this.format.isEmpty()) ? "style=\"" + this.format + "\"" : "";
+      Class = (!this.spanCass.isEmpty()) ? "class=\"" + this.spanCass + "\"" : "";
       text = "<span " + Class + style + ">" + text + "</span>";
     }
 
-    if (this.divClass != null) {
-      divClass = (this.divClass != null) ? "class=\"" + this.divClass + "\"" : "";
+    if (!this.divClass.isEmpty()) {
+      divClass = (!this.divClass.isEmpty()) ? "class=\"" + this.divClass + "\"" : "";
     }
     if (this._get("display") != null && this._get("display").equalsIgnoreCase("indent")) {
       divStyle = "style=\"text-indent: 0px; padding-left: 45px;\"";
     }
-    if (divClass !=null || divStyle !=null)
+     
+    if ((divClass !=null && !divClass.isEmpty()) || (divStyle != null && !divStyle.isEmpty()))
       return "<div" + divClass + divStyle + ">" + prefix + text + suffix + "</div>";
 
     

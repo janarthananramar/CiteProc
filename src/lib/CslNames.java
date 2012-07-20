@@ -89,8 +89,12 @@ public class CslNames extends CslFormat{
 		System.out.println("matches---"+matches);
 		if(matches == 0){
 			if(this.substitutes != null ){
-				for(int i=0;i<this.elements.size();i++)   {
-				      Object ob = this.elements.get(i);
+				 Set s = this.elements.entrySet();
+			      Iterator i = s.iterator();
+			      while (i.hasNext()) {
+			    	  Map.Entry me = (Map.Entry)i.next(); 
+			    	  Object ob =me.getValue();
+				      
 				      if (ob instanceof CslNames){
 				    	  variables = this.variable.split(" ");
 				    	  for(int j=0;j<variables.length;j++){
@@ -101,22 +105,18 @@ public class CslNames extends CslFormat{
 				              }
 				            }
 				      } 
-				      else if (ob instanceof CslText) 
-				      ((CslText) ob).render(data, mode); 
+				    /*  else if (ob instanceof CslText) 
+				    return  ((CslText) ob).render(data, mode); 
 				        else if (ob instanceof CslLabel)
-				       ((CslLabel) ob).render(data, mode);
-				   /*   else if (ob instanceof CslGroup)
-				        parts.add(((CslGroup) ob).render(data, mode));*/
+				        	return  ((CslLabel) ob).render(data, mode); 
 				      else if (ob instanceof CslLayout)
-				        ((CslLayout) ob).render(data, mode);
+				    	  return   ((CslLayout) ob).render(data, mode);
 				      else if (ob instanceof CslCitation)
-				       ((CslCitation) ob).render(data, mode);
-				    /*  else if (ob instanceof CslChoose)
-				        parts.add(((CslChoose) ob).render(data, mode));*/
+				    	  return ((CslCitation) ob).render(data, mode); 
 				      else if (ob instanceof CslBibliography)
-				        ((CslBibliography) ob).render(data, mode);
+				    	  return   ((CslBibliography) ob).render(data, mode);*/
 				      else if (ob instanceof CslName)
-					        ((CslName) ob).render(data, mode);
+				    	  return    ((CslName) ob).render(data, mode);
 
 				    }
 				 

@@ -61,6 +61,6 @@ public class CslCitation extends CslFormat {
 	      }
 	    }*/
 
-	    return text;
+	    return this.format(text);
 	  }
 }

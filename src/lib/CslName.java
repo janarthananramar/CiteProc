@@ -95,6 +95,7 @@ public class CslName extends CslFormat{
 	  ArrayList authors = new ArrayList();
 	  int count = 0;
 	  int authCount = 0;
+	  String givenValue = "";
 	  boolean etAlTriggered = false;
 	  String initializeWith = (String) this.attributes.get("initialize-with");
 	  try{
@@ -112,12 +113,14 @@ public class CslName extends CslFormat{
 			   System.out.println("this.patternModifiers^^^^^^^^^^^^"+this.patternModifiers); 
 			   System.out.println("(["+this.upper+"])["+this.lower+"]+"+this.patternModifiers);
 			 //  ([\\p{Lu}\\p{Lt}])[\\p{Ll}\\p{M}]+
-			   given = name.get("given").toString().replaceAll("(["+this.upper+"])["+this.lower+"]+"+this.patternModifiers, "$1");  
-			   given = given.toString().replaceAll("(?<=[-"+this.upper+"]) +(?=[-"+this.upper+"])"+this.patternModifiers, "");
+			 
+			   givenValue = name.get("given").toString().replaceAll("(["+this.upper+"])["+this.lower+"]+"+this.patternModifiers, "$1");  
+			   givenValue = givenValue.toString().replaceAll("(?<=[-"+this.upper+"]) +(?=[-"+this.upper+"])"+this.patternModifiers, "");
 			/*   if(initials != null && (!initials.equalsIgnoreCase(""))) {
 				   initials = given+initials;
 		          }*/
-			   initials = given;
+			   name.put("given", givenValue);
+			   initials = givenValue;
 			   System.out.println("initials----"+initials);
 		   }
 		   if(initials != null && !initials.equalsIgnoreCase("")){
@@ -141,21 +144,22 @@ public class CslName extends CslFormat{
                 System.out.println("initials---^6"+initials);
 
 		        if (initializeWith != null) {
-		          given = initials;
+		        	givenValue = initials;
 		        }
 		        else if(!given.isEmpty()) {
-		        	given = given+" "+initials;
+		        	givenValue = given+" "+initials;
 		        }
 		        else if(given.isEmpty()) {
-		          given = initials;
+		        	givenValue = initials;
 		        }
+		        name.put("given", givenValue);
 		   }
 		   System.out.println("given**"+given);
 		   String ndp = name.containsKey("non-dropping-particle")? name.get("non-dropping-particle")+" ":"";
 		   String suffix = name.containsKey("suffix") ?" "+name.get("suffix"):"";
 		 
-           if(given !=null){
-		         given = this.format(given, "given");
+           if(name.get("given") !=null){
+		         given = this.format(name.get("given").toString(), "given");
 				   System.out.println("given after--->"+given);
 		      }
            if(name.containsKey("family")) {
@@ -176,7 +180,7 @@ public class CslName extends CslFormat{
    	        		text = given+" "+ndp+family+suffix;
    	        	} 
    	          }
-   	     System.out.println("text--given--"+ this.format(text));
+   	     System.out.println("@@@@@@@@@@@@--"+ this.format(text));
    	     authors.add( this.format(text));
    	        }
            if((this.attributes.get("et-al-min") != null) && (count>=Integer.parseInt(this.attributes.get("et-al-min").toString())))
@@ -194,7 +198,7 @@ public class CslName extends CslFormat{
 			   
 		      }
 		      else {
-		    	  System.out.println("**"+this.citeProc.getLocale("term", "et-al", "", ""));
+		    	  System.out.println("*^^^^^^^^^^^^*"+this.citeProc.getLocale("term", "et-al", "", ""));
 		         authors.add(this.citeProc.getLocale("term", "et-al", "", ""));
 		      }
 		   etAlTriggered = true;
@@ -204,8 +208,16 @@ public class CslName extends CslFormat{
 		   authCount = authors.size();
 		      if (this.and != null && authCount > 1) {
 		    	  System.out.println("***"+this.and+" "+authors.get(authCount-1));
-		    	  authors.add((authCount-1),this.and+" "+authors.get(authCount-1));//stick an "and" in front of the last author if "and" is defined
-		      
+		    	  System.out.println("authors&&&&&&&&&"+authors.size());
+		    	  System.out.println("authCount&&&&&&&&&"+authCount);
+		    	  System.out.println("authors&&&&&&&&&"+(authCount-1));
+		    	  System.out.println("authors.get(authCount-1)&&&&&&&&"+authors.get(authCount-1));
+		    	  int pos = (authCount-1);
+		    	
+		    	  String value = this.and+" "+authors.get(authCount-1);
+		    	  authors.remove(pos);
+		    	  authors.add(value);//stick an "and" in front of the last author if "and" is defined
+		    	  System.out.println("authors&&&&&&&&&"+authors.size());
 		      }
 		    }
 	   System.out.println("authors--"+authors);
@@ -328,6 +340,8 @@ public class CslName extends CslFormat{
 		 if(modeAttrs !=null)
 		 this.attributes.putAll(modeAttrs);
 	}
+	if(this.attributes.get("delimiter") != null)
+	this.delimiter = this.attributes.get("delimiter").toString();
 	  if (this.delimiter == null && this.delimiter.equalsIgnoreCase("")) {
 		  this.delimiter = (String) this.attributes.get("name-delimiter"); 
 	     }
