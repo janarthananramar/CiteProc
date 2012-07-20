@@ -117,6 +117,10 @@ public class CslName extends CslFormat{
 			   givenValue = givenValue.toString().replaceAll("(?<=[-"+this.upper+"]) +(?=[-"+this.upper+"])"+this.patternModifiers, "");
 			 
 			   name.put("given", givenValue);
+			   if(name.get("initials")!=null) {
+				   name.put("initials", givenValue);
+			   }
+			   name.put("initials", givenValue);
 			   initials = givenValue;
 			   System.out.println("initials----"+initials);
 		   }
@@ -128,8 +132,10 @@ public class CslName extends CslFormat{
 		        initials = initials.toString().replaceAll("(?<=[-"+this.upper+"]) +(?=[-"+this.upper+"])"+this.patternModifiers, "");
 		        System.out.println("this.citeProc.style--"+this.citeProc.style);
 		        System.out.println("this.citeProc.style--"+this.citeProc.style.attributes);
-		        if (this.citeProc.style.attributes.get("initialize-with-hyphen") != null && this.citeProc.style.attributes.get("initialize-with-hyphen").equals(new Boolean(false))) {
-		        	initials = name.get("initials").toString().replaceAll("/-/", "");
+		        if (this.citeProc.style.attributes.get("initialize-with-hyphen") != null && this.citeProc.style.attributes.get("initialize-with-hyphen").equals("false")) {
+	                System.out.println("initials---^8"+name);
+		        	initials = name.get("initials").toString().replaceAll("-", "");
+	                System.out.println("initials---^9"+initials);
 		        }
 		        String pattern = "/ $/";
 		        // within initials, add a space after a hyphen, but only if ...
@@ -538,7 +544,7 @@ public class CslName extends CslFormat{
 	  retMap.put("alnum", "\\pL\\pN");// Unicode-aware equivalent of "[:alnum:]"
 	 
 	    // Matches Unicode letters: 
-	    retMap.put("alpha", "\\pL$");// Unicode-aware equivalent of "[:alpha:]"
+	    retMap.put("alpha", "\\pL");// Unicode-aware equivalent of "[:alpha:]"
 	    // Matches Unicode control codes & characters not in other categories: 
 	    retMap.put("cntrl", "\\pC");// Unicode-aware equivalent of "[:cntrl:]"
 	    // Matches Unicode dashes & hyphens: 
@@ -546,7 +552,7 @@ public class CslName extends CslFormat{
 	    // Matches Unicode digits: 
 	    retMap.put("digit", "\\Nd");// Unicode-aware equivalent of "[:digit:]"
 	    // Matches Unicode printing characters (excluding space):
-	    retMap.put("graph", "^\\p{Zs}\\p{gc=Cc}\\p{gc=Cs}\\p{gc=Cn}");// Unicode-aware equivalent of "[:graph:]"
+	    retMap.put("graph", "\\p{Zs}\\p{gc=Cc}\\p{gc=Cs}\\p{gc=Cn}");// Unicode-aware equivalent of "[:graph:]"
 	    // Matches Unicode lower case letters: 
 	    retMap.put("lower", "\\p{Ll}\\p{M}");// Unicode-aware equivalent of "[:lower:]"
 	    // Matches Unicode printing characters (including space): 
