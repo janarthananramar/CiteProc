@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,6 +35,7 @@ public class CslLocale {
   private String modulePath = System.getProperty("user.dir");
   String lang = "en";
   Document locale = null;
+  XPath localexPath = null;
 
   public CslLocale(String lang) {
     if (lang.isEmpty())
@@ -42,12 +45,41 @@ public class CslLocale {
     try {
 
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setNamespaceAware(true);
       DocumentBuilder builder = factory.newDocumentBuilder();
       InputSource is = new InputSource(new StringReader(this.getLocalesFileName(lang)));
       locale = builder.parse(is);
+      NamespaceContext ctx = new NamespaceContext() {
+        public String getNamespaceURI(String prefix) {
+          String uri;
+          if (prefix.equals("cs"))
+            uri = "http://purl.org/net/xbiblio/csl";
+
+          else
+            uri = null;
+          return uri;
+        }
+
+        // Dummy implementation - not used!
+        public Iterator getPrefixes(String val) {
+          return null;
+        }
+
+        // Dummy implemenation - not used!
+        public String getPrefix(String uri) {
+          return null;
+        }
+      };
       if (locale != null) {
-        Element element = locale.createElementNS("http://purl.org/net/xbiblio/csl", "cs");
-        locale.getDocumentElement().appendChild(element);
+
+        String xpathStr = "//cs:term";
+        XPathFactory xpathFact = XPathFactory.newInstance();
+        localexPath = xpathFact.newXPath();
+        localexPath.setNamespaceContext(ctx);
+        System.out.println("--" + locale.getNamespaceURI());
+        NodeList result = (NodeList) localexPath.evaluate(xpathStr, locale, XPathConstants.NODESET);
+        System.out.println("XPath result is \"" + result.getLength() + "\"");
+
         printXmlDocument(locale);
 
       }
@@ -214,28 +246,36 @@ public class CslLocale {
           nodes = (NodeList) xPath.evaluate(expresion, this.styleLocale, XPathConstants.NODESET);
           System.out.println("*111*************************" + nodes.item(0));
 
-          if (nodes == null) {
+          if (nodes.getLength() == 0) {
             expresion = "//locale/terms/term[@name='" + arg1 + "'" + form + "]" + plural;
             nodes = (NodeList) xPath.evaluate(expresion, this.styleLocale, XPathConstants.NODESET);
           }
 
         }
 
-        if (nodes == null) {
+        if (nodes.getLength() == 0) {
           expresion = "//cs:term[@name='" + arg1 + "'" + form + "]" + plural;
-          nodes = (NodeList) xPath.evaluate(expresion, this.locale, XPathConstants.NODESET);
+          System.out.println(expresion);
+          nodes = (NodeList) localexPath.evaluate(expresion, this.locale, XPathConstants.NODESET);
           // $term = $this->locale->xpath("//cs:term[@name='$arg1'$form]$plural");
         }
 
         if (nodes.item(0) != null) {
-          System.out.println("Nodes -" + nodes.item(0));
-          System.exit(0);
+          System.out.println("Nodes -" + nodes.item(0).getTextContent());
+          // printXmlDocument(locale);
+          // System.exit(0);
           /*
-           * if (arg3 != null && nodes.item(0).toString().equalsIgnoreCase(arg3))
-           * return nodes.item(0);
+           * if (isset($arg3) && isset($term[0]->{$arg3})) return (string)$term[0]->{$arg3};
+           * if (!isset($arg3) && isset($term[0]->single)) return (string)$term[0]->single;
+           * return (string)$term[0];
            */
-          // if (!isset($arg3) && isset($term[0]->single)) return (string)$term[0]->single;
-          // return (string)$term[0];
+          /*
+           * if (!arg3.equalsIgnoreCase("") && nodes.item(0).getTextContent().equalsIgnoreCase(arg3))
+           * return nodes.item(0).getTextContent();
+           * if (arg3.equalsIgnoreCase("") && nodes.item(0).getTextContent().equalsIgnoreCase("single"))
+           * return nodes.item(0).getTextContent();
+           */
+          return nodes.item(0).getTextContent();
         }
       } catch (XPathExpressionException e) {
         // TODO Auto-generated catch block

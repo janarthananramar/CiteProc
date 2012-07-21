@@ -198,11 +198,18 @@ public class CslName extends CslFormat {
         }
       }
       System.out.println("authors--" + authors);
-      for (int i = 0; i < authors.size(); i++) {
-        if (i == 0)
-          text = (String) authors.get(i);
+      // for (int i = 0; i < authors.size(); i++) {
+      Set s = authors.entrySet();
+      int j = 0;
+      Iterator i = s.iterator();
+      while (i.hasNext()) {
+        Map.Entry me = (Map.Entry) i.next();
+        String auth = me.getValue().toString();
+        if (j == 0)
+          text = auth;
         else
-          text = text + this.delimiter + authors.get(i);
+          text = text + this.delimiter + auth;
+        j++;
         System.out.println("text--delim--" + text);
       }
 
