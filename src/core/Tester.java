@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -15,12 +17,17 @@ public class Tester {
 
 	  public static void main(String args[]) throws FileNotFoundException  
 	  {
+		 
+		//String stringToSearch ="John Bertrand de Cusance Morant".replaceAll("([\\p{Lu}\\p{Lt}])[\\p{Ll}\\p{M}]+", "$1");
+		 //System.out.println(stringToSearch);
+		//System.exit(0);
+		  
 		  JSONParser parser = new JSONParser();
 		  try {
 			//  FileReader fr =	  new FileReader("/Applications/XAMPP/htdocs/citeproc/tests/name_Asian.json");
 			  StringBuffer fileData = new StringBuffer(1000); 
 			  BufferedReader reader = new BufferedReader( 
-			  new FileReader("/Applications/XAMPP/htdocs/citeproc/tests/name_AuthorCount.json")); 
+			  new FileReader("/Applications/XAMPP/htdocs/citeproc/tests/name_CollapseRoleLabels.json")); 
 			  char[] buf = new char[1024]; 
 			  int numRead=0; 
 			  while((numRead=reader.read(buf)) != -1){ 
@@ -30,15 +37,20 @@ public class Tester {
 			  } 
 			  reader.close();  
 			 String value =  fileData.toString();
-			 String[] pos =  value.split("\\*/\\{");
-			 System.out.println(pos.length);
-			 String data = "{"+pos[1];
-			 System.out.println(data);
+			 int index = (int)value.indexOf("*/");
+			 
+			 if(index!=-1) 
+				 index=index+2;
+			 else 
+				 index=0;
+
+			 String data = value.substring(index);
+			 
 			
 			Object obj = parser.parse(data);
 			JSONObject jsonObject = (JSONObject) obj;
 			String csl = (String) jsonObject.get("csl");
-			System.out.println("csl--"+csl);
+			//System.out.println("csl--"+csl);
 			
 			System.out.println("mode-->"+jsonObject.get("mode"));
 			
