@@ -37,7 +37,7 @@ public class CslFormat extends CslRenderingElement {
     this.format = "";
     try{
     	System.out.println("this.quotes--"+this.quotes);
-    if(this.quotes.size()==0) {
+    if(this.quotes.size()>0) {
     	System.out.println("this.citeProc format*****"+this.citeProc);
 	    this.quotes.put("punctuation-in-quote", this.citeProc.getLocale("style_option", "punctuation-in-quote","","")); 
 	    this.quotes.put("punctuation-in-quote", this.citeProc.getLocale("style_option", "punctuation-in-quote","",""));
