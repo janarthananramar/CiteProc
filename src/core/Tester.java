@@ -17,14 +17,9 @@ public class Tester {
 
 	  public static void main(String args[]) throws FileNotFoundException  
 	  {
-		 
-		//String stringToSearch ="John Bertrand de Cusance Morant".replaceAll("([\\p{Lu}\\p{Lt}])[\\p{Ll}\\p{M}]+", "$1");
-		 //System.out.println(stringToSearch);
-		//System.exit(0);
 		  
 		  JSONParser parser = new JSONParser();
 		  try {
-			//  FileReader fr =	  new FileReader("/Applications/XAMPP/htdocs/citeproc/tests/name_Asian.json");
 			  StringBuffer fileData = new StringBuffer(1000); 
 			  BufferedReader reader = new BufferedReader( 
 			  new FileReader("/Applications/XAMPP/htdocs/citeproc/tests/name_CollapseRoleLabels.json")); 
@@ -50,7 +45,6 @@ public class Tester {
 			Object obj = parser.parse(data);
 			JSONObject jsonObject = (JSONObject) obj;
 			String csl = (String) jsonObject.get("csl");
-			//System.out.println("csl--"+csl);
 			
 			System.out.println("mode-->"+jsonObject.get("mode"));
 			
