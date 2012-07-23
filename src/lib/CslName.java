@@ -43,13 +43,12 @@ public class CslName extends CslFormat {
   public CslName(Node domNode, CiteProc citeProc) {
     super(domNode, citeProc);
 
-    System.out.println("****CSLNAME*****");
     this.pdomNode = domNode;
     this.pciteProc = citeProc;
   }
 
   public String render(JSONArray names, String mode) {
-    System.out.println("@@CslName@@" + names);
+
     String text = "";
     HashMap authors = new HashMap();
     int count = 0;
@@ -58,13 +57,15 @@ public class CslName extends CslFormat {
     boolean etAlTriggered = false;
     String initializeWith = "";
     Integer key = 0;
-
+    System.out.println("*****************************");
+    System.out.println("*********CSLNAME************");
+    System.out.println("*****************************" + this.elements);
     try {
       if (this.attributes.get("initialize-with") != null)
         initializeWith = (String) this.attributes.get("initialize-with").toString();
-      System.out.println("initializeWith================" + initializeWith + "************");
+
       if (this.attrInit != null || !(this.attrInit.equalsIgnoreCase(mode))) {
-        System.out.println("asdfds");
+
         this.initAttrs(mode);
       }
       if (names != null) {
@@ -72,40 +73,30 @@ public class CslName extends CslFormat {
           count++;
           JSONObject name = (JSONObject) names.get(i);
           if (name.containsKey("given") && initializeWith != null && !initializeWith.equalsIgnoreCase("")) {
-            System.out.println("this.upper^^^^^^^^^^^^" + this.upper);
-            System.out.println("this.lower^^^^^^^^^^^^" + this.lower);
-            System.out.println("this.patternModifiers^^^^^^^^^^^^" + this.patternModifiers);
-            System.out.println("([" + this.upper + "])[" + this.lower + "]+" + this.patternModifiers);
 
             givenValue = name.get("given").toString()
                 .replaceAll("([" + this.upper + "])[" + this.lower + "]+" + this.patternModifiers, "$1");
 
             givenValue = givenValue.toString().replaceAll("(?<=[-" + this.upper + "]) +(?=[-" + this.upper + "])" + this.patternModifiers,
                 "");
-            System.out.println("givenValue>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + givenValue);
+
             name.put("given", givenValue);
             if (name.get("initials") != null) {
               name.put("initials", givenValue);
             }
             name.put("initials", givenValue);
             initials = givenValue;
-            System.out.println("initials----" + initials);
+
           }
           if (initials != null && !initials.equalsIgnoreCase("")) {
 
             // within initials, remove any dots:
             initials = initials.toString().replaceAll("([" + this.upper + "])\\.+" + this.patternModifiers, "$1");
-            System.out.println("initials>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + initials);
             // within initials, remove any spaces *between* initials:
             initials = initials.toString().replaceAll("(?<=[-" + this.upper + "]) +(?=[-" + this.upper + "])" + this.patternModifiers, "");
-            System.out.println("initials>>>>>>>>>>>>>>>>>>>>***>>>>>>>>>>" + givenValue);
-            System.out.println("this.citeProc.style--" + this.citeProc.style);
-            System.out.println("this.citeProc.style--" + this.citeProc.style.attributes);
             if (this.citeProc.style.attributes.get("initialize-with-hyphen") != null
                 && this.citeProc.style.attributes.get("initialize-with-hyphen").equals("false")) {
-              System.out.println("initials---^8" + name);
               initials = name.get("initials").toString().replaceAll("-", "");
-              System.out.println("initials---^9" + initials);
             }
             String pattern = "/ $/";
             // within initials, add a space after a hyphen, but only if ...
@@ -115,7 +106,6 @@ public class CslName extends CslFormat {
             // then, separate initials with the specified delimiter:
             initials = initials.toString().replaceAll("([" + this.upper + "])(?=[^" + this.lower + "]+|$)" + this.patternModifiers,
                 "$1" + initializeWith);
-            System.out.println("initials---^6" + initials);
 
             if (initializeWith != null) {
               givenValue = initials;
@@ -126,19 +116,17 @@ public class CslName extends CslFormat {
             }
             name.put("given", givenValue.trim());
           }
-          System.out.println("given**" + given);
+
           String ndp = name.containsKey("non-dropping-particle") ? name.get("non-dropping-particle") + " " : "";
           String suffix = name.containsKey("suffix") ? " " + name.get("suffix") : "";
 
           if (name.get("given") != null) {
             given = this.format(name.get("given").toString(), "given");
-            System.out.println("given after--->" + given);
           }
           if (name.containsKey("family")) {
             family = this.format(name.get("family").toString(), "family");
             if (this.form.equalsIgnoreCase("short")) {
               text = ndp + family;
-              System.out.println("text--ndp--" + text);
             } else {
               String val = (String) this.attributes.get("name-as-sort-order");
               if (val != null && val.equalsIgnoreCase("first")) {
@@ -149,7 +137,6 @@ public class CslName extends CslFormat {
                 text = given + " " + ndp + family + suffix;
               }
             }
-            System.out.println("@@@@@@@@@@@@--" + this.format(text));
             authors.put(key, this.format(text));
             key++;
           }
@@ -161,19 +148,14 @@ public class CslName extends CslFormat {
           && this.attributes.get("et-al-use-first") != null) {
         if (Integer.parseInt(this.attributes.get("et-al-use-first").toString()) < Integer.parseInt(this.attributes.get("et-al-min")
             .toString())) {
-          System.out.println("%%%%%%%%%% authors" + authors);
-          System.out.println("%%%%%%%%%% authors" + Integer.parseInt(this.attributes.get("et-al-use-first").toString()));
           for (Integer i = Integer.parseInt(this.attributes.get("et-al-use-first").toString()); i < count; i++) {
-            System.out.println("%%%%%%%%%% i" + i);
             authors.remove(i);
           }
         }
-        System.out.println("*^^^^^^^^^^^^*");
         if (this.attributes.get("etal") != null) {
           // authors = $this->etal->render();
 
         } else {
-          System.out.println("*^^^^^^^^^^^^*" + this.citeProc.getLocale("term", "et-al", "", ""));
           authors.put(key, this.citeProc.getLocale("term", "et-al", "", ""));
           key++;
         }
@@ -183,21 +165,14 @@ public class CslName extends CslFormat {
       if ((!authors.isEmpty()) && !etAlTriggered) {
         authCount = authors.size();
         if (this.and != null && authCount > 1) {
-          System.out.println("***" + this.and + " " + authors.get(authCount - 1));
-          System.out.println("authors&&&&&&&&&" + authors.size());
-          System.out.println("authCount&&&&&&&&&" + authCount);
-          System.out.println("authors&&&&&&&&&" + (authCount - 1));
-          System.out.println("authors.get(authCount-1)&&&&&&&&" + authors.get(authCount - 1));
           Integer pos = (authCount - 1);
 
           String value = this.and + " " + authors.get(authCount - 1);
           authors.remove(pos);
           authors.put(key, value);// stick an "and" in front of the last author if "and" is defined
           key++;
-          System.out.println("authors&&&&&&&&&" + authors.size());
         }
       }
-      System.out.println("authors--" + authors);
       // for (int i = 0; i < authors.size(); i++) {
       Set s = authors.entrySet();
       int j = 0;
@@ -210,7 +185,6 @@ public class CslName extends CslFormat {
         else
           text = text + this.delimiter + auth;
         j++;
-        System.out.println("text--delim--" + text);
       }
 
       if (this.form.equalsIgnoreCase("count")) {
@@ -224,12 +198,10 @@ public class CslName extends CslFormat {
       if (this.and != null && authCount > 1) {
         int lastDelim = text.indexOf(this.delimiter + this.and);
         if (this.dpl.equalsIgnoreCase("always")) {
-          System.out.println("text--aleays--" + text);
           return text;
         } else if (this.dpl.equalsIgnoreCase("never")) {
           String subStr = text.substring(lastDelim);
           text = text.replaceAll(subStr, " ");
-          System.out.println("text--never--" + text);
           return text;
         } else if (this.dpl.equalsIgnoreCase("contextual")) {
 
@@ -237,13 +209,11 @@ public class CslName extends CslFormat {
           if (authCount < 3) {
             String subStr = text.substring(lastDelim);
             text = text.replaceAll(subStr, " ");
-            System.out.println("text--lst--" + text);
             return text;
           }
         }
 
       }
-      System.out.println("Text--->" + text);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -252,20 +222,13 @@ public class CslName extends CslFormat {
 
   public String format(String text, String part) {
 
-    System.out.println("part--->" + part);
-    System.out.println("format--->" + this.citeProc.format.get(part));
-    System.out.println("this.noOp--" + this.citeProc.noOp);
-    System.out.println("this.format--" + this.format);
-
-    System.out.println("this.noOp.get(part)---" + this.citeProc.noOp.get(part));
     if (text.isEmpty() || ((Boolean) this.citeProc.noOp.get(part)).booleanValue() == true) {
-      System.out.println("text###" + text);
+
       return text;
     }
     if (this.citeProc.format.get(part) != null) {
       text = "<span style=\"" + this.citeProc.format.get(part) + "\">" + text + "</span>";
     }
-    System.out.println("text$$$$" + text);
     return text;
 
     /*
@@ -316,10 +279,8 @@ public class CslName extends CslFormat {
     }
     if (this.citeProc != null) {
       styleAttrs = this.citeProc.style.get_hier_attributes();
-      System.out.println("styleAttrs--->" + styleAttrs);
       if (mode.equalsIgnoreCase("citation"))
         modeAttrs = this.citeProc.citation.get_hier_attributes();
-      System.out.println("modeAttrs--->" + modeAttrs);
       if (styleAttrs != null)
         this.attributes.putAll(styleAttrs);
       if (modeAttrs != null)
@@ -349,6 +310,7 @@ public class CslName extends CslFormat {
       this.patternModifiers = regMap.get("patternModifiers").toString();
 
     }
+    System.out.println("this.attributes--........--" + this.attributes);
     this.dpl = (String) this.attributes.get("delimiter-precedes-last");
     this.sort_separator = (String) ((this.attributes.get("sort-separator") != null) ? this.attributes.get("sort-separator") : ",");
     this.form = (this.attributes.get("form") != null) ? this.attributes.get("form").toString() : "long";
@@ -360,34 +322,28 @@ public class CslName extends CslFormat {
     NodeList tags = el.getElementsByTagName("name-part");
 
     try {
-      System.out.println("~~~~~~~~~~~~~~^^^~~~~~" + this.citeProc.nameParts);
       if (this.citeProc.nameParts == null)
         this.citeProc.nameParts = new HashMap();
       if (tags != null) {
         String namePart = null;
         for (int i = 0; i < tags.getLength(); i++) {
-          System.out.println("$$$Node Name--->" + tags.item(i).getAttributes().getNamedItem("name"));
 
           if (tags.item(i).getAttributes().getNamedItem("name") != null) {
 
             namePart = tags.item(i).getAttributes().getNamedItem("name").getNodeValue();
-            System.out.println("namePart&&&&---" + namePart);
+
             tags.item(i).getAttributes().removeNamedItem("name");
 
             String value = "";
             String name = "";
             HashMap tempName = new HashMap();
-            System.out.println("***************!!!!***************");
-            System.out.println("tags.item(i)------" + tags.item(i));
+
             for (int j = 0; j < tags.item(i).getAttributes().getLength(); j++) {
               value = tags.item(i).getAttributes().item(j).getNodeValue();
               name = tags.item(i).getAttributes().item(j).getNodeName().replaceAll(" ", "_");
-              System.out.println("value---^^---" + value);
-              System.out.println("name----^^--" + name);
               tempName.put(name, value);
               this.citeProc.nameParts.put(namePart, tempName);
             }
-            System.out.println("**************!!!!!****************");
           }
         }
       }
@@ -398,32 +354,24 @@ public class CslName extends CslFormat {
   }
 
   public void initFormatting(Node domNode) {
-    System.out.println("'''''''''''''''''''''''''''");
     setNamePairs(domNode);
-    System.out.println("CslName initFormatting called");
-    System.out.println("Name Parts--->" + this.citeProc.nameParts);
 
     HashMap base = this.get_attributes();
-    System.out.println("**292**" + this.citeProc.format);
 
     if (this.citeProc.format == null) {
       this.citeProc.format = new HashMap();
 
     }
 
-    System.out.println("**295**" + this.format);
     this.citeProc.format.put("base", "");
     this.citeProc.format.put("family", "");
     this.citeProc.format.put("given", "");
     this.citeProc.noOp.put("base", new Boolean(true));
     this.citeProc.noOp.put("family", new Boolean(true));
     this.citeProc.noOp.put("given", new Boolean(true));
-    System.out.println("**300**");
+
     this.initFormat(base, "");
     HashMap temp = null;
-    System.out.println("***************************");
-    System.out.println("nameParts---" + this.citeProc.nameParts);
-    System.out.println("***************************");
     if (this.citeProc.nameParts != null) {
       Set s = this.citeProc.nameParts.entrySet();
       Iterator i = s.iterator();
@@ -432,7 +380,6 @@ public class CslName extends CslFormat {
         Object ob = me.getValue();
         if (ob instanceof HashMap) {
           temp = (HashMap) ob;
-          System.out.println("Attribs---->" + me.getValue() + "  | part---->" + me.getKey());
           this.initFormat((HashMap) me.getValue(), me.getKey());
         }
       }
@@ -442,7 +389,6 @@ public class CslName extends CslFormat {
 
   public void initFormat(HashMap attribs, Object part) {
 
-    System.out.println("Attribs---->" + attribs + "  | part---->" + part.toString());
     String value = "";
     if (attribs.get("font-weight") != null) {
       value += "font-weight: " + attribs.get("font-weight");
@@ -468,21 +414,18 @@ public class CslName extends CslFormat {
     }
     if (this.citeProc.format.get(part) != null)
       this.citeProc.noOp.put(part, new Boolean(false));
-    System.out.println("this format--->" + this.format);
   }
 
   public HashMap getRegexPatterns() {
     // Checks if PCRE is compiled with UTF-8 and Unicode support
 
     String pattern = "[\\pL]";
-    System.out.println("matches---" + "a".matches(pattern));
+
     // within initials, add a space after a hyphen, but only if ...
     if (!("a".matches(pattern))) {
-      System.out.println("%%%%%%%%%%%%%%%%%%");
       // probably a broken PCRE library
       return getLatin1Regex();
     } else {
-      System.out.println("@@@@@@@@@@@@@@@@@@");
       // Unicode safe filter for the value
       return getUtf8Regex();
     }
@@ -490,6 +433,7 @@ public class CslName extends CslFormat {
   }
 
   public HashMap getLatin1Regex() {
+    System.out.println("**********getLatin1Regex***************");
     HashMap retMap = new HashMap();
     retMap.put("alnum", "[:alnum:]ƒ≈¡¿¬√«…» À—÷ÿ”“‘’‹⁄Ÿ€ÕÃŒœ∆‰Â·‡‚„ÁÈËÍÎÒˆ¯ÛÚÙı¸˙˘˚ÌÏÓÔÊˇﬂ");
     // Matches ISO-8859-1 letters:
@@ -522,6 +466,7 @@ public class CslName extends CslFormat {
   }
 
   public HashMap getUtf8Regex() {
+    System.out.println("**********getUtf8Regex***************");
     HashMap retMap = new HashMap();
     // Matches Unicode letters & digits:
     retMap.put("alnum", "\\pL\\pN");// Unicode-aware equivalent of "[:alnum:]"

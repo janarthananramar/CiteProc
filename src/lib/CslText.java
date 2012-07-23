@@ -31,8 +31,8 @@ public class CslText extends CslFormat {
     }
   }
 
-  public void initFormatting() {
-    super.initFormatting();
+  public void initFormatting(Node node) {
+    super.initFormatting(node);
   }
 
   public String render(JSONObject data, String mode) {

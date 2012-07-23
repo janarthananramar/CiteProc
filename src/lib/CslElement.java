@@ -2,7 +2,6 @@ package lib;
 
 import java.util.HashMap;
 
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -13,12 +12,14 @@ public class CslElement extends CslCollection {
   protected HashMap attributes = new HashMap();
   protected CiteProc citeProc;
   String name = "";
- 
- /* public CslElement(){
-	  
-  }*/
+
+  /*
+   * public CslElement(){
+   * 
+   * }
+   */
   public CslElement(Node node, CiteProc citeproc) {
-	System.out.println("calling CslElement Constructor"+citeproc);
+    System.out.println("calling CslElement Constructor" + citeproc);
     this.citeProc = citeproc;
     this.setAttributes(node);
     this.init(node, citeProc);
@@ -26,29 +27,30 @@ public class CslElement extends CslCollection {
   }
 
   public void init(Node domNode, CiteProc citeProc) {
-	  System.out.println("init cslelement***"+citeProc);
+    System.out.println("init cslelement***" + citeProc);
     NodeList childNodes = domNode.getChildNodes();
     Node node = null;
     if (domNode == null)
       return;
-    System.out.println("childNodes.getLength()***"+childNodes.getLength());
+    System.out.println("childNodes.getLength()***" + childNodes.getLength());
     for (int i = 0; i < childNodes.getLength(); i++) {
-    	 System.out.println("i^^^^^^^^"+i);
+      System.out.println("i^^^^^^^^" + i);
       node = childNodes.item(i);
-      System.out.println("i^^^^^^^^"+node);
+      System.out.println("i^^^^^^^^" + node);
       if (node.getNodeType() == 1) {
-    	  System.out.println("***#####################***");
-    	  Object obj = CslFactory.create(node, citeProc);
-    	  System.out.println("**OBJ**"+obj);
-    	  if(obj != null)
-        this.addElement(i,obj );
-    	  System.out.println("~~~~~~~");
+        System.out.println("***#####################***");
+        Object obj = CslFactory.create(node, citeProc);
+        System.out.println("**OBJ**" + obj);
+        if (obj != null)
+          this.addElement(i, obj);
+        System.out.println("~~~~~~~");
       }
     }
   }
 
   public void _set(String name, String value) {
     this.attributes.put(name, value);
+    this.citeProc.attrib.put(name, value);
   }
 
   public Object _isset(String name) {
@@ -66,9 +68,9 @@ public class CslElement extends CslCollection {
   }
 
   public void setAttributes(Node domNode) {
-	System.out.println("calling CslElement Set Attributes");
-	System.out.println("dom_node->attributes->length --->"+domNode.getAttributes().getLength());
-	System.out.println("dom_node->nodeName --->"+domNode.getNodeName());
+    System.out.println("calling CslElement Set Attributes");
+    System.out.println("dom_node->attributes->length --->" + domNode.getAttributes().getLength());
+    System.out.println("dom_node->nodeName --->" + domNode.getNodeName());
     String value = "";
     String name = "";
     String elementName = domNode.getNodeName();
@@ -105,7 +107,6 @@ public class CslElement extends CslCollection {
         hier_attr.put(name, this.attributes.get(name));
       }
     }
-    
     return hier_attr;
   }
 

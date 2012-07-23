@@ -159,8 +159,8 @@ public class CslLocale {
   }
 
   public String getLocale(String type, String arg1, String arg2, String arg3) {
-
-    System.out.println("Type--->" + type);
+    System.out.println(" arg1--->" + arg1);
+    System.out.println(" arg3--->" + arg3);
     XPathFactory factory = XPathFactory.newInstance();
     XPath xPath = factory.newXPath();
     String expresion = "";
@@ -243,6 +243,7 @@ public class CslLocale {
         if (this.styleLocale != null) {
 
           expresion = "//locale[@xml:lang='en']/terms/term[@name='" + arg1 + "'" + form + "]" + plural;
+          System.out.println("*111*************************" + expresion);
           nodes = (NodeList) xPath.evaluate(expresion, this.styleLocale, XPathConstants.NODESET);
           System.out.println("*111*************************" + nodes.item(0));
 
@@ -257,6 +258,7 @@ public class CslLocale {
           expresion = "//cs:term[@name='" + arg1 + "'" + form + "]" + plural;
           System.out.println(expresion);
           nodes = (NodeList) localexPath.evaluate(expresion, this.locale, XPathConstants.NODESET);
+          System.out.println("nodes -" + nodes.getLength());
           // $term = $this->locale->xpath("//cs:term[@name='$arg1'$form]$plural");
         }
 
@@ -269,12 +271,12 @@ public class CslLocale {
            * if (!isset($arg3) && isset($term[0]->single)) return (string)$term[0]->single;
            * return (string)$term[0];
            */
-          /*
-           * if (!arg3.equalsIgnoreCase("") && nodes.item(0).getTextContent().equalsIgnoreCase(arg3))
-           * return nodes.item(0).getTextContent();
-           * if (arg3.equalsIgnoreCase("") && nodes.item(0).getTextContent().equalsIgnoreCase("single"))
-           * return nodes.item(0).getTextContent();
-           */
+
+          if (!arg3.equalsIgnoreCase("") && nodes.item(0).getTextContent().equalsIgnoreCase(arg3))
+            return nodes.item(0).getTextContent();
+          if (arg3.equalsIgnoreCase("") && nodes.item(0).getTextContent().equalsIgnoreCase("single"))
+            return nodes.item(0).getTextContent();
+
           return nodes.item(0).getTextContent();
         }
       } catch (XPathExpressionException e) {
