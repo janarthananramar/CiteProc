@@ -171,8 +171,11 @@ public class CslNames extends CslFormat {
       for (int i = 0; i < variableParts.size(); i++) {
         if (i == 0)
           text = variableParts.get(i).toString();
-        else
-          text = text + this.attributes.get("delimiter") + variableParts.get(i).toString();
+        else {
+          if (this.attributes.get("delimiter") != null)
+            this.delimiter = this.attributes.get("delimiter").toString();
+          text = text + this.delimiter + variableParts.get(i).toString();
+        }
         System.out.println("text-$$-" + text);
       }
       System.out.println("text-text-text-" + text);
