@@ -137,7 +137,7 @@ public class CslName extends CslFormat {
                 text = given + " " + ndp + family + suffix;
               }
             }
-            authors.put(key, this.format(text));
+            authors.put(key, this.format(text.trim()));
             key++;
           }
           if ((this.attributes.get("et-al-min") != null) && (count >= Integer.parseInt(this.attributes.get("et-al-min").toString())))
@@ -181,9 +181,9 @@ public class CslName extends CslFormat {
         Map.Entry me = (Map.Entry) i.next();
         String auth = me.getValue().toString();
         if (j == 0)
-          text = auth;
+          text = auth.trim();
         else
-          text = text + this.delimiter + auth;
+          text = text + this.delimiter + auth.trim();
         j++;
       }
 

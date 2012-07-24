@@ -147,20 +147,20 @@ public class CslNames extends CslFormat {
             System.out.println("text--" + text);
             this.citeProc.variable = var;
             System.out.println("text--" + ((CslName) ob).render((JSONArray) data.get(var), mode));
-            text += ((CslName) ob).render((JSONArray) data.get(var), mode);
+            text += ((CslName) ob).render((JSONArray) data.get(var), mode).trim();
+            System.out.println(")))))))))))))))))))))))))))))))))))))))" + text);
             // System.out.println("text--" + text);
           } else if (ob instanceof CslLabel) {
-            System.out.println(")))))))))))))))))))))))))))))))))))))))" + elements);
 
             CslLabel lblObj = (CslLabel) ob;
             System.out.println("text--" + lblObj.render(data, mode));
-            text += lblObj.render(data, mode);
+            text += lblObj.render(data, mode).trim();
 
           }
         }
       }
       if (!text.isEmpty())
-        variableParts.add(text);
+        variableParts.add(text.trim());
       System.out.println("**^^^**" + variableParts);
     }
     System.out.println("**END**");
