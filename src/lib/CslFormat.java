@@ -18,22 +18,22 @@ public class CslFormat extends CslRenderingElement {
   String suffix = "";
   String divStyle;
 
-  /*
-   * public CslFormat(){
-   * 
-   * }
-   */
-  public CslFormat(Node node, CiteProc citeProc) {
-    super(node, citeProc);
-    System.out.println("citeProc**&&&***" + citeProc);
+  
+   public CslFormat(){
+   
+   }
+   
+  public CslFormat(Node node, CiteProc citeProc, String calledFrom) {
+    super(node, citeProc, calledFrom);
+    System.out.println("CslFormat Constructor called");
     this.citeProc = citeProc;
-    // new CslElement(node, citeProc);
-    System.out.println("...............initformatting.........");
+    System.out.println("CslFormat before calling initFormatting");
     this.initFormatting(node);
 
   }
-
+  
   public void initFormatting(Node domNode) {
+    System.out.println("CslFormat initFormatting called");
     this.noOp = true;
     this.format = "";
     try {
@@ -82,6 +82,7 @@ public class CslFormat extends CslRenderingElement {
   public String format(String text) {
     String style = "";
     String Class = "";
+    System.out.println("@@@@-------------text while enter" + text);
     if (text.isEmpty() || this.noOp)
       return text;
     if (this._get("text-case") != null && this._get("text-case").length() > 0) {
@@ -100,6 +101,7 @@ public class CslFormat extends CslRenderingElement {
       }
 
     }
+    System.out.println("@@@@-------------text mid enter" + text);
     System.out.println("*this.quotes*" + this.quotes);
     if (this.quotes.get("open-quote") != null && this.attributes.get("prefix") != null)
       prefix = this.attributes.get("prefix").toString() + this.quotes.get("open-quote");
@@ -118,9 +120,11 @@ public class CslFormat extends CslRenderingElement {
     }
     if (!suffix.isEmpty()) {
       String noTags = text.replaceAll("\\<.*?\\>", "");
+      System.out.println("@@@@-------------noTags" + noTags);
 
       if (noTags.length() > 0 && noTags.charAt(noTags.length() - 1) == suffix.charAt(0)) {
         suffix = suffix.substring(1);
+        System.out.println("@@@@-------------suffix" + suffix);
       }
     }
     if (!this.format.isEmpty() || !this.spanCass.isEmpty()) {
@@ -138,6 +142,8 @@ public class CslFormat extends CslRenderingElement {
 
     if ((divClass != null && !divClass.isEmpty()) || (divStyle != null && !divStyle.isEmpty()))
       return "<div" + divClass + divStyle + ">" + prefix + text + suffix + "</div>";
+    System.out.println("@@@@-------------Prefix" + prefix);
+    System.out.println("@@@@-------------TExt" + text);
     System.out.println("@@@@-------------" + prefix + text + suffix);
 
     return prefix + text + suffix;

@@ -19,7 +19,10 @@ public class CslInfo {
   public HashMap<String, String> valueMap = new HashMap<String, String>();
 
   public CslInfo(Node domNode, CiteProc citeProc) {
-    HashMap<String, String> name = new HashMap<String, String>();
+	
+	System.out.println("Called CslInfo Constructor");
+    
+	HashMap<String, String> name = new HashMap<String, String>();
     Node node = null;
     NodeList childNodes = domNode.getChildNodes();
     for (int i = 0; i < childNodes.getLength(); i++) {

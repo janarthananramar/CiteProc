@@ -11,9 +11,7 @@ public class CslCollection {
   protected HashMap elements = new HashMap();
 
   protected void addElement(int i, Object elem) {
-	  System.out.println("element--->"+elem);
-	  if(elem instanceof lib.CslLayout)
-		  System.out.println("** layout **");
+	System.out.println("@@CslCollection add Element method@@"+elem);
     if (elem != null){
       elements.put(i, elem);
     }

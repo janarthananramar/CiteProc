@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class CslMapper {
 
-  protected static String mapField(String field) {
+  public String mapField(String field) {
     HashMap<String, String> fieldMap = new HashMap<String, String>();
 
     if (fieldMap.size() == 0) {
@@ -89,7 +89,7 @@ public class CslMapper {
     return returnVars;
   }
 
-  protected String mapType(String types) {
+  public String mapType(String types) {
 
     HashMap<String, String> typeMap = new HashMap<String, String>();
 

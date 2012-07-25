@@ -60,6 +60,7 @@ public class CslName extends CslFormat {
     System.out.println("*****************************");
     System.out.println("*********CSLNAME************");
     System.out.println("*****************************" + this.elements);
+    System.out.println("Names====>" + names);
     try {
       if (this.attributes.get("initialize-with") != null)
         initializeWith = (String) this.attributes.get("initialize-with").toString();
@@ -70,15 +71,19 @@ public class CslName extends CslFormat {
       }
       if (names != null) {
         for (int i = 0; i < names.size(); i++) {
+        	System.out.println("Rank===>"+i);
           count++;
           JSONObject name = (JSONObject) names.get(i);
-          if (name.containsKey("given") && initializeWith != null && !initializeWith.equalsIgnoreCase("")) {
+          System.out.println("Name given before 1st replace"+name.get("given").toString());
+          if (name.containsKey("given") && initializeWith != null) {
 
             givenValue = name.get("given").toString()
                 .replaceAll("([" + this.upper + "])[" + this.lower + "]+" + this.patternModifiers, "$1");
+            System.out.println("Name given after 1st replace"+givenValue);
 
             givenValue = givenValue.toString().replaceAll("(?<=[-" + this.upper + "]) +(?=[-" + this.upper + "])" + this.patternModifiers,
                 "");
+            System.out.println("Name given after 2nd replace"+givenValue);
 
             name.put("given", givenValue);
             if (name.get("initials") != null) {
@@ -88,12 +93,15 @@ public class CslName extends CslFormat {
             initials = givenValue;
 
           }
+          System.out.println("Name initials after 1st condition"+name.get("initials"));
           if (initials != null && !initials.equalsIgnoreCase("")) {
 
             // within initials, remove any dots:
             initials = initials.toString().replaceAll("([" + this.upper + "])\\.+" + this.patternModifiers, "$1");
+            System.out.println("Name given after 2nd condition 1st replace"+initials);
             // within initials, remove any spaces *between* initials:
             initials = initials.toString().replaceAll("(?<=[-" + this.upper + "]) +(?=[-" + this.upper + "])" + this.patternModifiers, "");
+            System.out.println("Name given after 2nd condition 2nd replace"+initials);
             if (this.citeProc.style.attributes.get("initialize-with-hyphen") != null
                 && this.citeProc.style.attributes.get("initialize-with-hyphen").equals("false")) {
               initials = name.get("initials").toString().replaceAll("-", "");
@@ -120,9 +128,11 @@ public class CslName extends CslFormat {
           String ndp = name.containsKey("non-dropping-particle") ? name.get("non-dropping-particle") + " " : "";
           String suffix = name.containsKey("suffix") ? " " + name.get("suffix") : "";
 
+          System.out.println("Name given before calling format"+name.get("given"));
           if (name.get("given") != null) {
             given = this.format(name.get("given").toString(), "given");
           }
+          System.out.println("Name given after calling format"+given);
           if (name.containsKey("family")) {
             family = this.format(name.get("family").toString(), "family");
             if (this.form.equalsIgnoreCase("short")) {
@@ -144,6 +154,7 @@ public class CslName extends CslFormat {
             break;
         }
       }
+      System.out.println("Text value when names is empty"+text);
       if ((this.attributes.get("et-al-min") != null) && (count >= Integer.parseInt(this.attributes.get("et-al-min").toString()))
           && this.attributes.get("et-al-use-first") != null) {
         if (Integer.parseInt(this.attributes.get("et-al-use-first").toString()) < Integer.parseInt(this.attributes.get("et-al-min")

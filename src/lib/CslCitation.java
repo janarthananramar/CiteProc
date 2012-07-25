@@ -17,21 +17,35 @@ public class CslCitation extends CslFormat {
   String value = "";
   String name = "";
 
-  public CslCitation(Node node, CiteProc citeProc) {
-    super(node, citeProc);
+  public CslCitation() {
+    //super(node, citeProc);
   }
 
-  public void init(Element domNode, CiteProc citeProc) {
-    NodeList options = domNode.getElementsByTagName("option");
+  public CslCitation(Node item, CiteProc citeProc, String calledFrom) {
+	    super(item, citeProc, calledFrom);
+}
+
+public void init(Node node, CiteProc citeProc) {
+
+	System.out.println("CslCitation Init Called");
+	
+	Element el = (Element)node;
+    NodeList options = el.getElementsByTagName("option");
+    System.out.println("CslCitation options length--->"+options.getLength());
     for (int i = 0; i < options.getLength(); i++) {
       value = options.item(i).getNodeValue();
       name = options.item(i).getNodeName();
       this.attributes.put(name, value);
     }
-    NodeList layouts = domNode.getElementsByTagName("layout");
+    
+    NodeList layouts = el.getElementsByTagName("layout");
+    System.out.println("CslCitation layouts length--->"+layouts.getLength());
     for (int i = 0; i < layouts.getLength(); i++) {
-      this.layout = new CslLayout(layouts.item(i), citeProc);
+      this.layout = new CslLayout(layouts.item(i), citeProc, "CslLayout");
     }
+    CslElement cslElem = new CslElement();
+    cslElem.setAttributes(node);
+    cslElem.initEle(node, citeProc);
   }
 
   public String render(JSONObject data, String mode) { 

@@ -13,44 +13,54 @@ public class CslElement extends CslCollection {
   protected CiteProc citeProc;
   String name = "";
 
-  /*
-   * public CslElement(){
-   * 
-   * }
-   */
-  public CslElement(Node node, CiteProc citeproc) {
-    System.out.println("calling CslElement Constructor" + citeproc);
+  public CslElement(){ }
+  
+  public CslElement(Node node, CiteProc citeproc, String calledFrom) {
+    System.out.println("calling CslElement Constructor");
     this.citeProc = citeproc;
     this.setAttributes(node);
-    this.init(node, citeProc);
+    System.out.println("CslElement after SetAttributes");
+    System.out.println("CslElement calledFrom--->"+calledFrom);
+    
+    if(calledFrom.equalsIgnoreCase("CslCitation")) {
+	    CslCitation citationOb = new CslCitation();
+	    citationOb.init(node, citeproc);
+    } else if(calledFrom.equalsIgnoreCase("CslLayout")) {
+    	this.initEle(node, citeproc);
+    }
+    else {
+    	System.exit(0);
+    }
+    
     System.out.println("cslElement AFTER init");
   }
 
-  public void init(Node domNode, CiteProc citeProc) {
-    System.out.println("init cslelement***" + citeProc);
+
+public void initEle(Node domNode, CiteProc citeProc) {
+    System.out.println("CslElement initEle Called");
     NodeList childNodes = domNode.getChildNodes();
     Node node = null;
     if (domNode == null)
       return;
-    System.out.println("childNodes.getLength()***" + childNodes.getLength());
+    System.out.println("CslElement childNodes length--->" + childNodes.getLength());
     for (int i = 0; i < childNodes.getLength(); i++) {
-      System.out.println("i^^^^^^^^" + i);
       node = childNodes.item(i);
-      System.out.println("i^^^^^^^^" + node);
       if (node.getNodeType() == 1) {
-        System.out.println("***#####################***");
-        Object obj = CslFactory.create(node, citeProc);
-        System.out.println("**OBJ**" + obj);
-        if (obj != null)
-          this.addElement(i, obj);
-        System.out.println("~~~~~~~");
+    	  char[] clsName = node.getNodeName().toCharArray();
+    	  clsName[0]=Character.toUpperCase(clsName[0]);
+    	  String className = new String("Csl"+clsName);
+        Object obj = CslFactory.create(node, citeProc, className);
+        if (obj != null){
+          this.addElement(this.citeProc.eleKey, obj);
+          this.citeProc.eleKey++;
+        }
       }
     }
   }
 
   public void _set(String name, String value) {
     this.attributes.put(name, value);
-    this.citeProc.attrib.put(name, value);
+    //this.citeProc.attrib.put(name, value);
   }
 
   public Object _isset(String name) {
@@ -81,16 +91,15 @@ public class CslElement extends CslCollection {
         System.out.println("name--->" + name + " |value--->" + value);
         if (!name.equalsIgnoreCase("xmlns")) {
           if (name.equalsIgnoreCase("type")) {
-            value = this.citeProc.map_type(value);
+            value = this.citeProc.mapType(value);
           }
           if ((name.equalsIgnoreCase("variable") || name.equalsIgnoreCase("is-numeric")) && !elementName.equalsIgnoreCase("label")) {
-            value = CslMapper.mapField(value);
+            value = this.citeProc.mapField(value);
           }
           _set(name, value);
         }
       }
     }
-    System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
   }
 
   public HashMap get_attributes() {

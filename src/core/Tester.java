@@ -22,7 +22,7 @@ public class Tester {
 		  try {
 			  StringBuffer fileData = new StringBuffer(1000); 
 			  BufferedReader reader = new BufferedReader( 
-			  new FileReader("/Applications/XAMPP/htdocs/citeproc/tests/name_CollapseRoleLabels.json")); 
+			  new FileReader("/Applications/XAMPP/htdocs/citeproc/tests/name_SubstituteName.json")); 
 			  char[] buf = new char[1024]; 
 			  int numRead=0; 
 			  while((numRead=reader.read(buf)) != -1){ 

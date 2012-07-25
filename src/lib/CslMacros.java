@@ -13,7 +13,7 @@ public class CslMacros extends CslCollection{
 		
 		System.out.println("Macros nodes list--->"+macroNodes.getLength());
 		for(int i=0; i<macroNodes.getLength();i++) {
-			Class macro = (Class) CslFactory.create(macroNodes.item(i), citeProc);
+			Class macro = (Class) CslFactory.create(macroNodes.item(i), citeProc, "CslMacros");
 			System.out.println("Macro Name--->"+macro.getCanonicalName());
 			System.out.println(macro);
 			this.elements.put(macro.getName(), macro);

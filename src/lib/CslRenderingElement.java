@@ -12,8 +12,11 @@ import core.CiteProc;
 
 public class CslRenderingElement extends CslElement {
 
-  public CslRenderingElement(Node node, CiteProc citeproc) {
-    super(node, citeproc);
+  public CslRenderingElement() { }
+  
+  public CslRenderingElement(Node node, CiteProc citeproc, String calledFrom) {
+    super(node, citeproc, calledFrom);
+    System.out.println("CslRenderingElement Constructor called");
     // TODO Auto-generated constructor stub
   }
 
@@ -29,7 +32,7 @@ public class CslRenderingElement extends CslElement {
 
   public String render(JSONObject data, String mode) {
     System.out.println("@@CslRenderingelement@@");
-    System.out.println("@@elements@@" + this.citeProc.elements);
+    System.out.println("@@elements@@" + this.elements);
     String text = "";
     String delimiter = "";
     ArrayList parts = new ArrayList();

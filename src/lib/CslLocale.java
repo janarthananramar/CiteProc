@@ -38,6 +38,7 @@ public class CslLocale {
   XPath localexPath = null;
 
   public CslLocale(String lang) {
+	  System.out.println("CslLocale constructor called");
     if (lang.isEmpty())
       lang = "en";
     this.lang = lang;
@@ -76,11 +77,11 @@ public class CslLocale {
         XPathFactory xpathFact = XPathFactory.newInstance();
         localexPath = xpathFact.newXPath();
         localexPath.setNamespaceContext(ctx);
-        System.out.println("--" + locale.getNamespaceURI());
+        //System.out.println("--" + locale.getNamespaceURI());
         NodeList result = (NodeList) localexPath.evaluate(xpathStr, locale, XPathConstants.NODESET);
-        System.out.println("XPath result is \"" + result.getLength() + "\"");
+        //System.out.println("XPath result is \"" + result.getLength() + "\"");
 
-        printXmlDocument(locale);
+        //printXmlDocument(locale);
 
       }
     } catch (Exception e) {

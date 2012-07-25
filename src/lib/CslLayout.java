@@ -12,8 +12,11 @@ import core.CiteProc;
 
 public class CslLayout extends CslFormat {
 
-  public CslLayout(Node node, CiteProc citeProc) {
-    super(node, citeProc);
+ public CslLayout() {
+	 
+ }
+  public CslLayout(Node node, CiteProc citeProc, String calledFrom) {
+    super(node, citeProc, calledFrom);
     // TODO Auto-generated constructor stub
   }
 

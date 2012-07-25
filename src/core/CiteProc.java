@@ -40,8 +40,10 @@ public class CiteProc {
   public HashMap nameParts = new HashMap();
   public HashMap format = new HashMap();
   public String variable = "";
-  public HashMap elements = new HashMap();
+  //public HashMap elements = new HashMap();
   public HashMap attrib = new HashMap();
+  public Object substitutes = null;
+  public int eleKey = 0;
 
   public CiteProc(String csl, String lang) {
     if (lang.isEmpty())
@@ -65,8 +67,7 @@ public class CiteProc {
       String theString = writer.toString();
 
       cslDoc = builder.parse(new ByteArrayInputStream(theString.getBytes()));
-      this.locale = new CslLocale(lang);
-      this.locale.setStyleLocale(cslDoc);
+      
       NodeList styleNodes = (NodeList) cslDoc.getElementsByTagName("style");
 
       if (styleNodes != null) {
@@ -84,7 +85,10 @@ public class CiteProc {
           this.info = new CslInfo(infoNodes.item(i), this);
         }
       }
-
+      
+      this.locale = new CslLocale(lang);
+      this.locale.setStyleLocale(cslDoc);
+      
       NodeList macroNodes = cslDoc.getElementsByTagName("macro");
       if (macroNodes != null) {
         this.macros = new CslMacros(macroNodes, this);
@@ -94,7 +98,7 @@ public class CiteProc {
       NodeList citationNodes = cslDoc.getElementsByTagName("citation");
       if (citationNodes != null) {
         for (int i = 0; i < citationNodes.getLength(); i++) {
-          this.citation = new CslCitation(citationNodes.item(i), this);
+          this.citation = new CslCitation(citationNodes.item(i), this, "CslCitation");
         }
       }
 
@@ -143,7 +147,17 @@ public class CiteProc {
     return text;
   }
 
-  public String map_type(String field) {
-    return "";
+  public String mapType(String field) {
+	  if(this.mapper != null) {
+		  return this.mapper.mapType(field);
+	  }
+    return field;
+  }
+  
+  public String mapField(String field) {
+	  if(this.mapper != null) {
+		  return this.mapper.mapField(field);
+	  }
+    return field;
   }
 }

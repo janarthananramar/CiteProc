@@ -6,8 +6,10 @@ import core.CiteProc;
 
 public class CslStyle extends CslElement {
 	
+	public CslStyle() {}
+	
 	public CslStyle(Node domNode, CiteProc citeproc) {
-		super(domNode, citeproc);
+		//super(domNode, citeproc);
 		System.out.println("calling CslStyle Constructor");
 		if(domNode.getNodeName()!=null) {
 			this.setAttributes(domNode);

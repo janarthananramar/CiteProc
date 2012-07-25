@@ -14,14 +14,13 @@ import org.w3c.dom.NodeList;
 import core.CiteProc;
 
 public class CslNames extends CslFormat {
-  private Object substitutes = null;
   private String delimiter = "";
   private String styleDelimiter = "";
   private String modeDelimiter = "";
   String variable = "";
 
-  public CslNames(Node node, CiteProc citeProc) {
-    super(node, citeProc);
+  public CslNames(Node node, CiteProc citeProc, String calledFrom) {
+    super(node, citeProc, calledFrom);
     // TODO Auto-generated constructor stub
   }
 
@@ -30,11 +29,15 @@ public class CslNames extends CslFormat {
   }
 
   public void init(Node domNode, CiteProc citeProc) {
+	    System.out.println("*****************************");
+	    System.out.println("********CSLNAMES Init********");
+	    System.out.println("*****************************");
     Object etal = null;
     Node tag = null;
     tag = ((Element) domNode).getElementsByTagName("substitute").item(0);
     if (tag != null) {
-      this.substitutes = CslFactory.create(tag, citeProc);
+      this.citeProc.substitutes = CslFactory.create(tag, citeProc);
+	    System.out.println("this substitues===>"+this.citeProc.substitutes);
       domNode.removeChild(tag);
     }
     tag = ((Element) domNode).getElementsByTagName("et-al").item(0);
@@ -55,16 +58,18 @@ public class CslNames extends CslFormat {
          * if(element instanceof CslName)
          * ((CslName)element).etal = etal;
          */
-        this.addElement(i, element);
+        this.addElement(this.citeProc.eleKey, element);
+        this.citeProc.eleKey++;
       }
     }
 
   }
 
-  public String render(JSONObject data, String mode) {
+  @SuppressWarnings("unchecked")
+public String render(JSONObject data, String mode) {
     int matches = 0;
     System.out.println("*****************************");
-    System.out.println("*********CSLNAMES************");
+    System.out.println("******CSLNAMES Render********");
     System.out.println("*****************************");
     ArrayList variableParts = new ArrayList();
     if (this.delimiter.equalsIgnoreCase("")) {
@@ -91,8 +96,13 @@ public class CslNames extends CslFormat {
         break;
       }
     }
+    System.out.println("Matches===>"+matches);
+    System.out.println("Elements===>"+this.elements);
+    System.out.println("Substitutes===>"+this.citeProc.substitutes);
+    System.out.println("Attributes===>"+this.attributes);
     if (matches == 0) {
-      if (this.substitutes != null) {
+      if (this.citeProc.substitutes != null) {
+    	  System.out.println("Elements--->"+this.elements);
         Set s = this.elements.entrySet();
         Iterator i = s.iterator();
         while (i.hasNext()) {
@@ -125,8 +135,8 @@ public class CslNames extends CslFormat {
             System.out.println("((((((((((((((((((((((((((((((((((((");
             return ((CslLabel) ob).render(data, mode);
           } else if (ob instanceof CslName)
-            return ((CslName) ob).render(data, mode);
-
+              System.out.println("The Object belongs to CslName");
+            return ((CslName) ob).render((JSONArray)data.get(var), mode);
         }
 
       }
@@ -146,7 +156,6 @@ public class CslNames extends CslFormat {
           if (ob instanceof CslName) {
             System.out.println("text--" + text);
             this.citeProc.variable = var;
-            System.out.println("text--" + ((CslName) ob).render((JSONArray) data.get(var), mode));
             text += ((CslName) ob).render((JSONArray) data.get(var), mode).trim();
             System.out.println(")))))))))))))))))))))))))))))))))))))))" + text);
             // System.out.println("text--" + text);
