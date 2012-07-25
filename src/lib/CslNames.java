@@ -19,6 +19,9 @@ public class CslNames extends CslFormat {
   private String modeDelimiter = "";
   String variable = "";
 
+  public CslNames() {
+	  }
+  
   public CslNames(Node node, CiteProc citeProc, String calledFrom) {
     super(node, citeProc, calledFrom);
     // TODO Auto-generated constructor stub
@@ -36,13 +39,13 @@ public class CslNames extends CslFormat {
     Node tag = null;
     tag = ((Element) domNode).getElementsByTagName("substitute").item(0);
     if (tag != null) {
-      this.citeProc.substitutes = CslFactory.create(tag, citeProc);
+      this.citeProc.substitutes = CslFactory.create(tag, citeProc,"CslNames");
 	    System.out.println("this substitues===>"+this.citeProc.substitutes);
       domNode.removeChild(tag);
     }
     tag = ((Element) domNode).getElementsByTagName("et-al").item(0);
     if (tag != null) {
-      etal = CslFactory.create(domNode, citeProc);
+      etal = CslFactory.create(domNode, citeProc,"CslNames");
       domNode.removeChild(tag);
     }
     String var = ((Element) domNode).getAttribute("variable");
@@ -51,7 +54,7 @@ public class CslNames extends CslFormat {
     for (int i = 0; i < nodeList.getLength(); i++) {
       node = nodeList.item(i);
       if (node.getNodeType() == 1) {
-        Object element = CslFactory.create(node, citeProc);
+        Object element = CslFactory.create(node, citeProc,"CslNames");
         /*
          * if(element instanceof CslLabel)
          * ((CslLabel)element).variable = var;

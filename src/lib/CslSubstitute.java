@@ -6,8 +6,8 @@ import core.CiteProc;
 
 public class CslSubstitute  extends CslElement{
 
-	public CslSubstitute(Node node, CiteProc citeproc) {
-		//super(node, citeproc);
+	public CslSubstitute(Node node, CiteProc citeproc, String calledFrom) {
+		super(node, citeproc,"CslElement");
 		// TODO Auto-generated constructor stub
 	}
 

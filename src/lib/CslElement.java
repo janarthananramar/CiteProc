@@ -25,10 +25,17 @@ public class CslElement extends CslCollection {
     if(calledFrom.equalsIgnoreCase("CslCitation")) {
 	    CslCitation citationOb = new CslCitation();
 	    citationOb.init(node, citeproc);
-    } else if(calledFrom.equalsIgnoreCase("CslLayout")) {
+    } 
+    else if(calledFrom.equalsIgnoreCase("CslLayout")) {
     	this.initEle(node, citeproc);
     }
-    else {
+    else if(calledFrom.equalsIgnoreCase("CslNames")) {
+    	CslNames cslNameOb = new CslNames();
+    	cslNameOb.init(node, citeproc);
+    } 
+    else if(calledFrom.equalsIgnoreCase("CslElement")) {
+    	this.initEle(node, citeproc);
+    } else {
     	System.exit(0);
     }
     
@@ -46,9 +53,12 @@ public void initEle(Node domNode, CiteProc citeProc) {
     for (int i = 0; i < childNodes.getLength(); i++) {
       node = childNodes.item(i);
       if (node.getNodeType() == 1) {
+      	System.out.println("CslElement initEle node name--->" + node.getNodeName());
     	  char[] clsName = node.getNodeName().toCharArray();
     	  clsName[0]=Character.toUpperCase(clsName[0]);
-    	  String className = new String("Csl"+clsName);
+    	  String className = new String(clsName);
+    	className = "Csl"+className;
+    	System.out.println("CslElement initEle className after Csl--->" + className);
         Object obj = CslFactory.create(node, citeProc, className);
         if (obj != null){
           this.addElement(this.citeProc.eleKey, obj);
